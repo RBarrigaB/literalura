@@ -1,5 +1,6 @@
 package com.alura.literalura.model.Entities;
 
+import com.alura.literalura.model.DTOs.LibroDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
        @UniqueConstraint(columnNames =  {"titulo", "id_autor"})
 })
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Libro {
 
     @Id
@@ -30,4 +31,14 @@ public class Libro {
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_autor", nullable = false)
     private Autor autor;
+
+    public Libro fromDTO(LibroDTO libroDTO) {
+        this.titulo = libroDTO.titulo();
+        this.idioma = libroDTO.idiomas().get(0);
+        this.numDescargas = libroDTO.numeroDescargas();
+        this.autor = new Autor().fromDTO(libroDTO.autores().get(0));
+        return this;
+    }
 }
+
+

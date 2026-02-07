@@ -2,6 +2,7 @@ package com.alura.literalura.util;
 
 import com.alura.literalura.model.DTOs.ApiResponseDTO;
 import com.alura.literalura.model.DTOs.LibroDTO;
+import com.alura.literalura.model.exception.ServiceException;
 import com.alura.literalura.services.Gutendex_API;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +23,7 @@ public class DataConverterImpl implements DataConverter {
         try {
             return objectMapper.readValue(json,genClass);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new ServiceException("Error al parsear la respuesta de la API");
         }
     }
 

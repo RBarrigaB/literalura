@@ -1,14 +1,16 @@
 package com.alura.literalura.model.Entities;
 
+import com.alura.literalura.model.DTOs.AutorDTO;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 @Table(name = "autor")
 public class Autor {
@@ -22,8 +24,19 @@ public class Autor {
     private String nombre;
 
     @Column(name = "anio_nacimiento", nullable = false)
-    private LocalDate anioNacimiento;
+    private Integer anioNacimiento;
 
     @Column(name = "anio_fallecimiento")
-    private LocalDate anioFallecimiento;
+    private Integer anioFallecimiento;
+
+    public Autor fromDTO(AutorDTO autorDTO) {
+        this.nombre = autorDTO.name();
+        this.anioNacimiento = autorDTO.birth_year() != null
+                ? Integer.parseInt(autorDTO.birth_year())
+                : null;
+        this.anioFallecimiento = autorDTO.death_year() != null
+                ? Integer.parseInt(autorDTO.death_year())
+                : null;
+        return this;
+    }
 }
