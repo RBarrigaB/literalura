@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "libro")
+@Table(name = "libro", uniqueConstraints = {
+       @UniqueConstraint(columnNames =  {"titulo", "id_autor"})
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Libro {
