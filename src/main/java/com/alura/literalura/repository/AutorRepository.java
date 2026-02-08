@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface AutorRepository extends JpaRepository<Autor,Long> {
-    Optional<Autor> findByNombreAndAnioNacimiento(String nombre, Integer anioNacimiento);
+    Optional<Autor> findByNombreIgnoreCaseAndAnioNacimiento(String nombre, Integer anioNacimiento);
 }

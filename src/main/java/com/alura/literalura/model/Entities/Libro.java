@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "libro", uniqueConstraints = {
        @UniqueConstraint(columnNames =  {"titulo", "id_autor"})
 })
 @Getter
+@Setter
 @NoArgsConstructor
 public class Libro {
 

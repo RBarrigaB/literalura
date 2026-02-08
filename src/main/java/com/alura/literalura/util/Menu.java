@@ -1,21 +1,28 @@
 package com.alura.literalura.util;
 
+import com.alura.literalura.model.DTOs.AutorLibrosDTO;
 import com.alura.literalura.model.DTOs.LibroDTO;
+import com.alura.literalura.model.Entities.Autor;
 import com.alura.literalura.model.Entities.Libro;
 import com.alura.literalura.model.exception.ServiceException;
+import com.alura.literalura.services.AutorService;
 import com.alura.literalura.services.LibroService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Scanner;
+
 @Component
 public class Menu {
 
     private final Scanner inputUser = new Scanner(System.in);
     private final LibroService libroService;
+    private final AutorService autorService;
 
-    public Menu(LibroService libroService) {
+    public Menu(LibroService libroService, AutorService autorService) {
         this.libroService = libroService;
+        this.autorService = autorService;
     }
 
 
@@ -53,10 +60,10 @@ public class Menu {
                         opc1();
                         break;
                     case (2):
-                        System.out.println("Listar libros registrados");
+                        opc2();
                         break;
                     case (3):
-                        System.out.println("Listar autores registrados");
+                        opc3();
                         break;
                     case (4):
                         System.out.println("Listar actores vivos en determinado año");
@@ -69,7 +76,7 @@ public class Menu {
                         return;
                 }
             } catch (ServiceException ex) {
-                System.out.println("⚠ " + ex.getMessage());
+                System.out.println("\n⚠ " + ex.getMessage() + "\n");
             } catch (Exception ex) {
                 System.out.println("❌ Error inesperado: " + ex.getMessage());
             }
@@ -82,14 +89,57 @@ public class Menu {
         System.out.print("Nombre del libro: ");
         String titulo = inputUser.nextLine().trim();
         if (titulo.isBlank()) {
-            throw new ServiceException("El título no puede estar vacío");
+            throw new ServiceException("El nombre del libro no puede estar vacío");
         }
-                Libro libro = libroService.buscarYRegistrarLibro(titulo);
-                System.out.println("\n---------- LIBRO ----------");
-                System.out.println("Titulo: "+libro.getTitulo());
-                System.out.println("Autor: "+libro.getAutor().getNombre());
-                System.out.println("Idioma: "+libro.getIdioma());
-                System.out.println("Número de descargas: "+libro.getNumDescargas());
-                System.out.println("\n---------------------------");
+        Libro libro = libroService.buscarYRegistrarLibro(titulo);
+        formatoImpresionLibro(libro);
+    }
+
+    private void opc2() {
+        List<Libro> librosRegistrados = libroService.obtenerLibros();
+        if (librosRegistrados.isEmpty()) {
+            System.out.println("\n----------------------------------");
+            System.out.println("AÚN NO EXISTE NINGÚN LIBRO REGISTRADO ");
+            System.out.println("----------------------------------\n");
+        } else {
+            System.out.println("\n----------------------------------");
+            System.out.println("CANTIDAD DE LIBROS REGISTRADOS: " + librosRegistrados.size());
+            System.out.println("----------------------------------\n");
+            librosRegistrados.forEach(this::formatoImpresionLibro);
+        }
+    }
+
+    private void opc3() {
+        List<AutorLibrosDTO> librosRegistrados = autorService.obtenerAutores();
+        if (librosRegistrados.isEmpty()) {
+            System.out.println("\n----------------------------------");
+            System.out.println("AÚN NO EXISTE NINGÚN AUTOR REGISTRADO ");
+            System.out.println("----------------------------------\n");
+        } else {
+            System.out.println("\n----------------------------------");
+            System.out.println("CANTIDAD DE AUTORES REGISTRADOS: " + librosRegistrados.size());
+            System.out.println("----------------------------------\n");
+            librosRegistrados.forEach(this::formatoImpresionAutores);
+        }
+    }
+
+    private void formatoImpresionLibro(Libro libro) {
+        System.out.println("\n------------- LIBRO --------------");
+        System.out.println("Titulo: " + libro.getTitulo());
+        System.out.println("Autor: " + libro.getAutor().getNombreFormatoApi());
+        System.out.println("Idioma: " + libro.getIdioma());
+        System.out.println("Número de descargas: " + libro.getNumDescargas());
+        System.out.println("----------------------------------\n");
+    }
+
+    private void formatoImpresionAutores(AutorLibrosDTO autores) {
+        System.out.println("\n------------- AUTOR --------------");
+        System.out.println("Nombre: " + autores.getAutor().name());
+        System.out.println("Fecha de nacimiento: " + autores.getAutor().birth_year());
+        System.out.println("Fecha de fallecimiento: " + autores.getAutor().death_year());
+        System.out.println("Libros: " + autores.getLibros().stream()
+                .map(LibroDTO::titulo).sorted()
+                .toList());
+        System.out.println("----------------------------------\n");
     }
 }

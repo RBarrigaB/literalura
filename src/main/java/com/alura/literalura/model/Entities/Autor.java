@@ -2,11 +2,10 @@ package com.alura.literalura.model.Entities;
 
 import com.alura.literalura.model.DTOs.AutorDTO;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,8 +28,11 @@ public class Autor {
     @Column(name = "anio_fallecimiento")
     private Integer anioFallecimiento;
 
+    @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY)
+    private List<Libro> libros = new ArrayList<>();
+
     public Autor fromDTO(AutorDTO autorDTO) {
-        this.nombre = autorDTO.name();
+        this.nombre = normalizarNombre(autorDTO.name());
         this.anioNacimiento = autorDTO.birth_year() != null
                 ? Integer.parseInt(autorDTO.birth_year())
                 : null;
@@ -39,4 +41,23 @@ public class Autor {
                 : null;
         return this;
     }
+
+    private String normalizarNombre(String nombreApi) {
+        if (nombreApi.contains(",")) {
+            String[] partes = nombreApi.split(",");
+            return partes[1].trim() + " " + partes[0].trim();
+        }
+        return nombreApi.trim();
+    }
+
+    public String getNombreFormatoApi() {
+        if (nombre == null || !nombre.contains(" ")) {
+            return nombre;
+        }
+
+        String[] partes = nombre.split(" ", 2);
+        return partes[1] + ", " + partes[0];
+    }
 }
+
+

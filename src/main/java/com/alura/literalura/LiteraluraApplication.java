@@ -1,12 +1,10 @@
 package com.alura.literalura;
 
-import com.alura.literalura.services.LibroService;
 import com.alura.literalura.util.Menu;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @AllArgsConstructor
@@ -22,12 +20,4 @@ public class LiteraluraApplication implements CommandLineRunner {
 	public void run(String... args) {
 		menu.startApp();
 	}
-
-//	@Bean
-//	CommandLineRunner run(LibroService libroService) {
-//		return args -> {
-//			libroService.procesar("pride");
-//		};
-//	}
-
 }

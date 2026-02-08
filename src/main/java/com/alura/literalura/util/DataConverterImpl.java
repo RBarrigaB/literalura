@@ -29,9 +29,8 @@ public class DataConverterImpl implements DataConverter {
 
     public List<LibroDTO> obtenerLibros(String searchInput) {
         searchInput = searchInput.isBlank() ? "" : searchInput;
-        ApiResponseDTO.GutendexResponseDTO response =
-                getData(gutendexApi.getLibros(searchInput), ApiResponseDTO.GutendexResponseDTO.class);
-
+            ApiResponseDTO.GutendexResponseDTO response =
+                    getData(gutendexApi.getLibros(searchInput), ApiResponseDTO.GutendexResponseDTO.class);
         return response.results();
     }
 }
