@@ -62,6 +62,15 @@ public class LibroService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<Libro> obtenerLibrosPorIdioma(String idioma) {
+        try {
+            return libroRepository.findByIdioma(idioma);
+        } catch (Exception e) {
+            throw new ServiceException("No existen libros en el idioma seleccionado.");
+        }
+    }
+
     public static String normalizarNombreAutor(String nombreApi) {
         if (nombreApi.contains(",")) {
             String[] partes = nombreApi.split(",");

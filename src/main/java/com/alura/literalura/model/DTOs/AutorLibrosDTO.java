@@ -1,7 +1,6 @@
 package com.alura.literalura.model.DTOs;
 
 import com.alura.literalura.model.Entities.Autor;
-import com.alura.literalura.model.Entities.Libro;
 import lombok.Getter;
 import lombok.Setter;
 

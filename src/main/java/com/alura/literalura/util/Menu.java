@@ -2,12 +2,10 @@ package com.alura.literalura.util;
 
 import com.alura.literalura.model.DTOs.AutorLibrosDTO;
 import com.alura.literalura.model.DTOs.LibroDTO;
-import com.alura.literalura.model.Entities.Autor;
 import com.alura.literalura.model.Entities.Libro;
 import com.alura.literalura.model.exception.ServiceException;
 import com.alura.literalura.services.AutorService;
 import com.alura.literalura.services.LibroService;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -41,18 +39,15 @@ public class Menu {
                 System.out.println("5 - Listar libros por idioma");
                 System.out.println("0 - Salir");
                 System.out.print("Opcion: ");
-                if (!inputUser.hasNextInt()) {
-                    System.out.println("Entrada inválida. Debe ser un número.\n");
-                    inputUser.nextLine(); // limpiar buffer
-                    continue;
-                }
 
-                opcionElegida = inputUser.nextInt();
-                inputUser.nextLine(); // limpiar salto de línea
+                String input = inputUser.nextLine().trim();
+                if (!input.matches("\\d+")) {
+                    throw new ServiceException("Entrada inválida. Debe ser un número.");
+                }
+                opcionElegida = Integer.parseInt(input);
 
                 if (opcionElegida < 0 || opcionElegida > 5) {
-                    System.out.println("Opción inválida. Intente nuevamente.\n");
-                    continue;
+                    throw new ServiceException("Opción inválida. Intente nuevamente.");
                 }
 
                 switch (opcionElegida) {
@@ -66,10 +61,10 @@ public class Menu {
                         opc3();
                         break;
                     case (4):
-                        System.out.println("Listar actores vivos en determinado año");
+                        opc4();
                         break;
                     case (5):
-                        System.out.println("Listar libros por idiomas");
+                        opc5();
                         break;
                     case (0):
                         System.out.println("\nGracias por usar Literalura. \nHasta pronto.\n");
@@ -98,13 +93,13 @@ public class Menu {
     private void opc2() {
         List<Libro> librosRegistrados = libroService.obtenerLibros();
         if (librosRegistrados.isEmpty()) {
-            System.out.println("\n----------------------------------");
+            System.out.println("\n----------------------------------\n");
             System.out.println("AÚN NO EXISTE NINGÚN LIBRO REGISTRADO ");
-            System.out.println("----------------------------------\n");
-        } else {
             System.out.println("\n----------------------------------");
+        } else {
+            System.out.println("\n----------------------------------\n");
             System.out.println("CANTIDAD DE LIBROS REGISTRADOS: " + librosRegistrados.size());
-            System.out.println("----------------------------------\n");
+            System.out.println("\n----------------------------------");
             librosRegistrados.forEach(this::formatoImpresionLibro);
         }
     }
@@ -112,34 +107,84 @@ public class Menu {
     private void opc3() {
         List<AutorLibrosDTO> librosRegistrados = autorService.obtenerAutores();
         if (librosRegistrados.isEmpty()) {
-            System.out.println("\n----------------------------------");
+            System.out.println("\n----------------------------------\n");
             System.out.println("AÚN NO EXISTE NINGÚN AUTOR REGISTRADO ");
-            System.out.println("----------------------------------\n");
-        } else {
             System.out.println("\n----------------------------------");
+        } else {
+            System.out.println("\n----------------------------------\n");
             System.out.println("CANTIDAD DE AUTORES REGISTRADOS: " + librosRegistrados.size());
-            System.out.println("----------------------------------\n");
+            System.out.println("\n----------------------------------");
             librosRegistrados.forEach(this::formatoImpresionAutores);
         }
     }
 
+    private void opc4() {
+        int opcionElegida;
+        System.out.println("\nIngrese el año en el cual desea ver los autores vivos\n");
+        System.out.print("Año: ");
+        String input = inputUser.nextLine().trim();
+
+        if (!input.matches("\\d{1,4}")) {
+            throw new ServiceException("Entrada inválida. El año de búsqueda debe ser un número válido.");
+        }
+
+        int anioElegido = Integer.parseInt(input);
+        List<AutorLibrosDTO> librosRegistrados = autorService.obtenerAutoresPorAnio(anioElegido);
+        if (librosRegistrados.isEmpty()) {
+            System.out.println("\n----------------------------------\n");
+            System.out.println("AÚN NO EXISTE NINGÚN AUTOR REGISTRADO QUE ESTUVIERA VIVO ESE AÑO");
+            System.out.println("----------------------------------\n");
+        } else {
+            System.out.println("\n----------------------------------\n");
+            System.out.println("CANTIDAD DE AUTORES REGISTRADOS VIVOS: " + librosRegistrados.size());
+            System.out.println("\n----------------------------------");
+            librosRegistrados.forEach(this::formatoImpresionAutores);
+        }
+    }
+
+    private void opc5() {
+        System.out.println("\nIngrese el idioma que desea en que desea consultar los libros registrados\n");
+        System.out.println("es - español\nen - inglés\nfr - francés\npt - portugués");
+        System.out.print("Idioma del libro: ");
+        String idioma = inputUser.nextLine().trim();
+        if (idioma.isBlank()) {
+            throw new ServiceException("El idioma del libro no puede estar vacío");
+        } else if (!idioma.matches("(?i)es|en|fr|pt")) {
+            throw new ServiceException("El idioma del libro debe ser uno de los disponibles. Por favor, intente nuevamente.");
+        } else {
+           List<Libro> librosIdiomaSeleccionado = libroService.obtenerLibrosPorIdioma(idioma);
+            if (librosIdiomaSeleccionado.isEmpty()) {
+                System.out.println("\n---------------------------------------------------------------------\n");
+                System.out.println("AÚN NO EXISTE NINGÚN LIBRO REGISTRADO EN EL IDIOMA SELECCIONADO");
+                System.out.println("\n---------------------------------------------------------------------");
+            } else {
+                System.out.println("\n---------------------------------------------------------------------\n");
+                System.out.println("CANTIDAD DE LIBROS REGISTRADOS EN EL IDIOMA SELECCIONADO: " + librosIdiomaSeleccionado.size());
+                System.out.println("\n---------------------------------------------------------------------");
+                librosIdiomaSeleccionado.forEach(this::formatoImpresionLibro);
+            }
+        }
+    }
+
+
+
     private void formatoImpresionLibro(Libro libro) {
-        System.out.println("\n------------- LIBRO --------------");
+        System.out.println("\n------------- LIBRO ------------------------\n");
         System.out.println("Titulo: " + libro.getTitulo());
         System.out.println("Autor: " + libro.getAutor().getNombreFormatoApi());
         System.out.println("Idioma: " + libro.getIdioma());
         System.out.println("Número de descargas: " + libro.getNumDescargas());
-        System.out.println("----------------------------------\n");
+        System.out.println("\n--------------------------------------------\n");
     }
 
     private void formatoImpresionAutores(AutorLibrosDTO autores) {
-        System.out.println("\n------------- AUTOR --------------");
+        System.out.println("\n------------- AUTOR ---------------------\n");
         System.out.println("Nombre: " + autores.getAutor().name());
         System.out.println("Fecha de nacimiento: " + autores.getAutor().birth_year());
         System.out.println("Fecha de fallecimiento: " + autores.getAutor().death_year());
         System.out.println("Libros: " + autores.getLibros().stream()
                 .map(LibroDTO::titulo).sorted()
                 .toList());
-        System.out.println("----------------------------------\n");
+        System.out.println("\n-----------------------------------------\n");
     }
 }

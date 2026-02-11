@@ -26,4 +26,15 @@ public class AutorService {
             throw new ServiceException("Error al obtener la lista de autores");
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<AutorLibrosDTO> obtenerAutoresPorAnio(int anioDeterminado) {
+        try {
+           return autorRepository.findByAnioNacimientoLessThanEqualAndAnioFallecimientoGreaterThanEqual(anioDeterminado,anioDeterminado).stream()
+                   .map(AutorLibrosDTO::new)
+                   .toList();
+        } catch (Exception e) {
+            throw new ServiceException("Error al buscar autores en la fecha ingresada");
+        }
+    }
 }
